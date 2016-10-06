@@ -4,6 +4,9 @@ const board = document.querySelector('.board');
 
 const gameBoard = [['','',''],['','','']]
 
+let score = 0
+let turnCtr = 1
+
 board.addEventListener('click', evt => {
   const col = evt.target.cellIndex
   const row = evt.target.closest('tr').rowIndex
@@ -14,13 +17,14 @@ board.addEventListener('click', evt => {
   let clickedHole = { row, col };
   console.log("clickedHole", clickedHole);
   console.log(checkWhack(clickedHole));
+  console.log('Score:', score)
 
 
 })
 
 const drawBoard = (b) => {
 	board.innerHTML = `
-	  <table>
+    <table>
 	    <tr>
 	      <td>${b[0][0]}</td>
 	      <td>${b[0][1]}</td>
@@ -37,23 +41,38 @@ const drawBoard = (b) => {
 
 // drawBoard(gameBoard)
 
-const makeMole = () => {
+const makeMole = function() {
 	const rndRow = Math.floor(Math.random() * 2);
 	const rndCol = Math.floor(Math.random() * 3);
 	gameBoard[rndRow][rndCol] = 'X';
 	return gameBoard;
 }
 
-const gamePlay = () => {
-	const board = makeMole();
-	drawBoard(board);
-}
-
 const checkWhack = (clickedHole) => {
 	if (gameBoard[clickedHole.row][clickedHole.col]) {
+    score++
 		return 'whack!!!';
 	}
+  score--
 	return 'miss!'
 }
 
-gamePlay()
+function startGame() {
+  let id = setInterval(turn, 1000)
+  function turn() {
+    if(turnCtr > 5) {
+      clearInterval(id)
+      console.log('Fuck you interval')
+    }
+    else {
+      console.log(turnCtr)
+      const board = makeMole();
+      drawBoard(board);
+      turnCtr++
+    }
+  }
+}
+
+startGame()
+ 
+
