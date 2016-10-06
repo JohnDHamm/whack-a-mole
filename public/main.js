@@ -1,5 +1,16 @@
 'use strict'
 
-const test = document.querySelector('.test');
+const board = document.querySelector('.board');
 
-test.innerText = "It's a test";
+board.innerHTML = `
+  <table>
+    <tr></tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    <tr></tr>
+      <td>☺</td>
+      <td></td>
+      <td></td>
+  </table>
+`;
