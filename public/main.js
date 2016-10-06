@@ -2,9 +2,9 @@
 
 const board = document.querySelector('.board');
 
-const gameBoard = [['','q',''],['','c','']]
+const gameBoard = [['','',''],['','','']]
 
-const  drawBoard = (b) => {
+const drawBoard = (b) => {
 
 	board.innerHTML = `
 	  <table>
@@ -22,4 +22,13 @@ const  drawBoard = (b) => {
 	`
 }
 
-drawBoard(gameBoard)
+// drawBoard(gameBoard)
+
+const makeMole = () => {
+	const rndRow = Math.floor(Math.random() * 2)
+	const rndCol = Math.floor(Math.random() * 3)
+	gameBoard[rndRow][rndCol] = 'X'
+	drawBoard(gameBoard)
+}
+
+makeMole()
