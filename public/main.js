@@ -4,8 +4,21 @@ const board = document.querySelector('.board');
 
 const gameBoard = [['','',''],['','','']]
 
-const drawBoard = (b) => {
+board.addEventListener('click', evt => {
+  const col = evt.target.cellIndex
+  const row = evt.target.closest('tr').rowIndex
+  // console.log("clicked on row: ", row);
+  // console.log("clicked on col: ", col);
 
+  // socket.emit('make move', { row, col })
+  let clickedHole = { row, col };
+  console.log("clickedHole", clickedHole);
+  console.log(checkWhack(clickedHole));
+
+
+})
+
+const drawBoard = (b) => {
 	board.innerHTML = `
 	  <table>
 	    <tr>
@@ -25,10 +38,22 @@ const drawBoard = (b) => {
 // drawBoard(gameBoard)
 
 const makeMole = () => {
-	const rndRow = Math.floor(Math.random() * 2)
-	const rndCol = Math.floor(Math.random() * 3)
-	gameBoard[rndRow][rndCol] = 'X'
-	drawBoard(gameBoard)
+	const rndRow = Math.floor(Math.random() * 2);
+	const rndCol = Math.floor(Math.random() * 3);
+	gameBoard[rndRow][rndCol] = 'X';
+	return gameBoard;
 }
 
-makeMole()
+const gamePlay = () => {
+	const board = makeMole();
+	drawBoard(board);
+}
+
+const checkWhack = (clickedHole) => {
+	if (gameBoard[clickedHole.row][clickedHole.col]) {
+		return 'whack!!!';
+	}
+	return 'miss!'
+}
+
+gamePlay()
