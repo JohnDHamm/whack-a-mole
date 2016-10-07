@@ -3,10 +3,12 @@
 const board = document.querySelector('.board');
 const start = document.querySelector('.start');
 
-const gameBoard = [['','',''],['','','']];
+let gameBoard = [['','',''],['','','']];
 
 let score = 0;
 let turnCtr = 1;
+
+let timerInterval = 500;
 
 const drawBoard = (b) => {
 	board.innerHTML = `
@@ -62,19 +64,24 @@ const checkWhack = (clickedHole) => {
 }
 
 function startGame() {
-  let id = setInterval(turn, 1000)
+  let id = setInterval(turn, timerInterval)
   function turn() {
     if(turnCtr > 5) {
       clearInterval(id)
-      console.log('Fuck you interval')
+      console.log('Game over, muthafucker!')
     }
     else {
       console.log(turnCtr)
       const board = makeMole();
       drawBoard(board);
       turnCtr++
+      clearBoard();
     }
   }
+}
+
+const clearBoard = () => {
+	gameBoard = [['','',''],['','','']];
 }
 
 
