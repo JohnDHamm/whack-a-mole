@@ -55,7 +55,7 @@ const Game = mongoose.model('game', {
       [String, String, String],
     ],
     default: [
-      ['', '', ''],
+      ['x', 'x', 'x'],
       ['', '', ''],
     ]
   }
@@ -73,8 +73,8 @@ const makeMole = function() {
 
 	//update the db with new board
 
-	gameBoard[rndRow][rndCol] = 'X';
-	return gameBoard;
+	// gameBoard[rndRow][rndCol] = 'X';
+	// return gameBoard;
 	// timerInterval -= 250;
 }
 
@@ -83,7 +83,7 @@ function startGame(gameId) {
 	//get game from db
 	Game.findById(gameId)
 		.then( game => {
-			console.log("gameFound: ", game);
+			// console.log("gameFound: ", game);
 			//update board
 			updateBoard(game.board);
 		  let id = setInterval(turn, timerInterval)
@@ -92,7 +92,7 @@ function startGame(gameId) {
 		      clearInterval(id)
 		      console.log('Game over, muthafucker!')
 		    } else {
-		      clearBoard();
+		      clearBoard(gameId);
 		      console.log("turn: ", turnCtr)
 		      const board = makeMole();
 		      // drawBoard(board);
@@ -103,22 +103,41 @@ function startGame(gameId) {
 
 }
 
-const clearBoard = () => {
+const clearBoard = (gameId) => {
 	console.log("clearing board");
-	const emptyBoard = [['','',''],['','','']];
+	const emptyBoard = { board: [['','',''],['','','']] } ;
 	// update db with new board
-	updateDbBoard(emptyBoard)
+	updateDbBoard(emptyBoard, gameId)
 }
 
 const updateBoard = (board) => {
 	io.emit('update board', board)
 }
 
-const updateDbBoard = (board) => {
+const updateDbBoard = (game, gameId) => {
+
+	console.log("updating db?", game, gameId);
 	//send new board to update the db
-	// Game.save()
-	// 	.then ( game => {
-	// 		return game.board
+	Game
+		.findOneAndUpdate({_id: gameId}, game, { upsert: true })
+		.then(data => {
+			console.log("data: ", data);
+			updateBoard(data.board)
+			// res.status(200).json(data)
+		})
+
+
+	// Game
+	// 	.findById(gameId)
+	// 	// .then(game => console.log("game found ID:", game ))
+	// 	.then(game => {
+	// 		console.log("game found ID:", game )
+	// 		game.save(newBoard)
+	// 		.then ( game => {
+	// 			updateBoard(game.board)
+	// 			console.log("updated db board");
+	// 		})
+
 	// 	})
 }
 
