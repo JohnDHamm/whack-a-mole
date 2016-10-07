@@ -1,26 +1,14 @@
 'use strict'
 
 const board = document.querySelector('.board');
+const start = document.querySelector('.start');
 
-const gameBoard = [['','',''],['','','']]
+let gameBoard = [['','',''],['','','']];
 
-let score = 0
-let turnCtr = 1
+let score = 0;
+let turnCtr = 1;
 
-board.addEventListener('click', evt => {
-  const col = evt.target.cellIndex
-  const row = evt.target.closest('tr').rowIndex
-  // console.log("clicked on row: ", row);
-  // console.log("clicked on col: ", col);
-
-  // socket.emit('make move', { row, col })
-  let clickedHole = { row, col };
-  console.log("clickedHole", clickedHole);
-  console.log(checkWhack(clickedHole));
-  console.log('Score:', score)
-
-
-})
+let timerInterval =1000;
 
 const drawBoard = (b) => {
 	board.innerHTML = `
@@ -39,13 +27,32 @@ const drawBoard = (b) => {
 	`
 }
 
-// drawBoard(gameBoard)
+drawBoard(gameBoard);
+
+board.addEventListener('click', evt => {
+  const col = evt.target.cellIndex
+  const row = evt.target.closest('tr').rowIndex
+  // console.log("clicked on row: ", row);
+  // console.log("clicked on col: ", col);
+
+  // socket.emit('make move', { row, col })
+  let clickedHole = { row, col };
+  // console.log("clickedHole", clickedHole);
+  console.log(checkWhack(clickedHole));
+  console.log('Score:', score)
+})
+
+start.addEventListener('click', evt => {
+	startGame();
+})
+
 
 const makeMole = function() {
 	const rndRow = Math.floor(Math.random() * 2);
 	const rndCol = Math.floor(Math.random() * 3);
 	gameBoard[rndRow][rndCol] = 'X';
 	return gameBoard;
+	// timerInterval -= 250;
 }
 
 const checkWhack = (clickedHole) => {
@@ -58,13 +65,15 @@ const checkWhack = (clickedHole) => {
 }
 
 function startGame() {
-  let id = setInterval(turn, 1000)
+  let id = setInterval(turn, timerInterval)
   function turn() {
-    if(turnCtr > 5) {
+    if(turnCtr > 10) {
       clearInterval(id)
-      console.log('Fuck you interval')
+      console.log('Game over, muthafucker!')
     }
     else {
+    	// console.log("timer: ", timerInterval);
+      clearBoard();
       console.log(turnCtr)
       const board = makeMole();
       drawBoard(board);
@@ -73,6 +82,9 @@ function startGame() {
   }
 }
 
-startGame()
- 
+const clearBoard = () => {
+	gameBoard = [['','',''],['','','']];
+}
+
+
 
