@@ -8,7 +8,7 @@ let gameBoard = [['','',''],['','','']];
 let score = 0;
 let turnCtr = 1;
 
-let timerInterval = 500;
+let timerInterval =1000;
 
 const drawBoard = (b) => {
 	board.innerHTML = `
@@ -37,7 +37,7 @@ board.addEventListener('click', evt => {
 
   // socket.emit('make move', { row, col })
   let clickedHole = { row, col };
-  console.log("clickedHole", clickedHole);
+  // console.log("clickedHole", clickedHole);
   console.log(checkWhack(clickedHole));
   console.log('Score:', score)
 })
@@ -52,6 +52,7 @@ const makeMole = function() {
 	const rndCol = Math.floor(Math.random() * 3);
 	gameBoard[rndRow][rndCol] = 'X';
 	return gameBoard;
+	// timerInterval -= 250;
 }
 
 const checkWhack = (clickedHole) => {
@@ -66,16 +67,17 @@ const checkWhack = (clickedHole) => {
 function startGame() {
   let id = setInterval(turn, timerInterval)
   function turn() {
-    if(turnCtr > 5) {
+    if(turnCtr > 10) {
       clearInterval(id)
       console.log('Game over, muthafucker!')
     }
     else {
+    	// console.log("timer: ", timerInterval);
+      clearBoard();
       console.log(turnCtr)
       const board = makeMole();
       drawBoard(board);
       turnCtr++
-      clearBoard();
     }
   }
 }
