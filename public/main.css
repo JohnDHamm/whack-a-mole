@@ -5,4 +5,25 @@ td {
   text-align: center;
   font-size: 120px;
   border-radius: 50%;
+  background: radial-gradient(circle, black, #5E2F2F);
 }
+
+.board {
+	background-image: url(http://i.imgur.com/SO4M8W0.png);
+	margin-top:50px;
+	margin-left: 25%;
+	margin-right: 25%;
+	padding-top: 75px;
+	padding-bottom: 75px;
+}
+
+table {
+	display: flex;
+	justify-content: space-around;
+}
+
+body {
+	text-align: center;
+}
+
+
