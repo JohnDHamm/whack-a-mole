@@ -3,14 +3,7 @@
 const socket = io()
 
 const board = document.querySelector('.board');
-const start = document.querySelector('.start');
-
-let gameBoard = [['','',''],['','','']];
-
-let score = 0;
-let turnCtr = 1;
-
-let timerInterval =1000;
+// const start = document.querySelector('.start');
 
 const drawBoard = (b) => {
 	board.innerHTML = `
@@ -29,8 +22,6 @@ const drawBoard = (b) => {
 	`
 }
 
-drawBoard(gameBoard);
-
 board.addEventListener('click', evt => {
   const col = evt.target.cellIndex
   const row = evt.target.closest('tr').rowIndex
@@ -44,18 +35,13 @@ board.addEventListener('click', evt => {
   console.log('Score:', score)
 })
 
-start.addEventListener('click', evt => {
-	startGame();
-})
+// start.addEventListener('click', evt => {
+// 	socket.emit('start game', {})
+// 	// startGame();
+// })
 
 
-const makeMole = function() {
-	const rndRow = Math.floor(Math.random() * 2);
-	const rndCol = Math.floor(Math.random() * 3);
-	gameBoard[rndRow][rndCol] = 'X';
-	return gameBoard;
-	// timerInterval -= 250;
-}
+
 
 const checkWhack = (clickedHole) => {
 	if (gameBoard[clickedHole.row][clickedHole.col]) {
@@ -66,27 +52,7 @@ const checkWhack = (clickedHole) => {
 	return 'miss!'
 }
 
-function startGame() {
-  let id = setInterval(turn, timerInterval)
-  function turn() {
-    if(turnCtr > 10) {
-      clearInterval(id)
-      console.log('Game over, muthafucker!')
-    }
-    else {
-    	// console.log("timer: ", timerInterval);
-      clearBoard();
-      console.log(turnCtr)
-      const board = makeMole();
-      drawBoard(board);
-      turnCtr++
-    }
-  }
-}
-
-const clearBoard = () => {
-	gameBoard = [['','',''],['','','']];
-}
+socket.on('update board', gameBoard => drawBoard(gameBoard))
 
 socket.on('connect', () => console.log(`Socket connected: ${socket.id}`))
 socket.on('disconnect', () => console.log('Socket disconnected'))
