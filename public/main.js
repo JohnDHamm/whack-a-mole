@@ -1,5 +1,7 @@
 'use strict'
 
+const socket = io()
+
 const board = document.querySelector('.board');
 const start = document.querySelector('.start');
 
@@ -85,6 +87,9 @@ function startGame() {
 const clearBoard = () => {
 	gameBoard = [['','',''],['','','']];
 }
+
+socket.on('connect', () => console.log(`Socket connected: ${socket.id}`))
+socket.on('disconnect', () => console.log('Socket disconnected'))
 
 
 
