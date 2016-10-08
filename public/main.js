@@ -11,14 +11,14 @@ const drawBoard = (b) => {
   board.innerHTML = `
     <table>
       <tr>
-        <td>${b[0][0]}</td>
-        <td>${b[0][1]}</td>
-        <td>${b[0][2]}</td>
+        <td><img src='${b[0][0]}' class='moleImg'</td>
+        <td><img src='${b[0][1]}' class='moleImg'</td>
+        <td><img src='${b[0][2]}' class='moleImg'</td>
       </tr>
       <tr>
-        <td>${b[1][0]}</td>
-        <td>${b[1][1]}</td>
-        <td>${b[1][2]}</td>
+        <td><img src='${b[1][0]}' class='moleImg'</td>
+        <td><img src='${b[1][1]}' class='moleImg'</td>
+        <td><img src='${b[1][2]}' class='moleImg'</td>
       </tr>
     </table>
   `

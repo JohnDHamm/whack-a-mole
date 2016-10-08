@@ -57,7 +57,7 @@ const Game = mongoose.model('game', {
       [String, String, String],
     ],
     default: [
-      ['X', '', ''],
+      ['', '', ''],
       ['', '', ''],
     ]
   }
@@ -83,11 +83,23 @@ function startGame(gameId) {
 		    if(roundCtr > maxRounds) {
 		      clearInterval(intervalId)
 		      console.log('Game over, muthafucker!')
+		      roundCtr = 0;
 		    } else {
 		    	Promise.resolve()
 						.then(() => clearBoard())
 						.then(emptyBoard => updateDbBoard(emptyBoard, gameId))
-						// .then(gameObj => emitBoard(gameObj))
+						.then(gameObj => emitBoard(gameObj))
+						.then(pause)
+						// .then(g => {
+						// 	const startPauseTime = Date.now()
+						// 	var myVar = setInterval(myTimer, 1);
+						// 	function myTimer() {
+    		// 				var d = Date.now();
+    		// 				if (d > startPauseTime + 500) {
+    		// 					clearInterval(myVar)
+    		// 				}
+						// 	}
+						// })
 						.then(gameObj => makeMole(gameObj))
 						.then(gameObj => updateDbBoard(gameObj, gameId))
 						.then(gameObj => emitBoard(gameObj))
@@ -101,13 +113,22 @@ function startGame(gameId) {
 
 }
 
+const pause = (gameObj) => {
+	console.log("pausing");
+	var currentTime = new Date().getTime();
+	while (currentTime + 500 >= new Date().getTime()) {};
+	return gameObj
+
+}
 
 const makeMole = function(game) {
 	//assign a "mole" to the board
 	const rndRow = Math.floor(Math.random() * 2);
 	const rndCol = Math.floor(Math.random() * 3);
 	//add mole to board array
-	game.board[rndRow][rndCol] = '☃';
+	// game.board[rndRow][rndCol] = '☃';
+	game.board[rndRow][rndCol] = `/img/snowden1.png`;
+	// game.board[rndRow][rndCol] = `/img/giphy.gif`;
 	game.markModified('board') // trigger mongoose change detection
 	console.log("new mole game.board: ", game.board);
 	return game
@@ -159,7 +180,7 @@ const checkWhack = (clickedHole) => {
 				console.log('miss!')
 				console.log(score)
 			}
-		 
+
 		})
 }
 
