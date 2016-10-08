@@ -28,11 +28,9 @@ board.addEventListener('click', evt => {
   // console.log("clicked on row: ", row);
   // console.log("clicked on col: ", col);
 
-  // socket.emit('make move', { row, col })
   let clickedHole = { row, col };
   // console.log("clickedHole", clickedHole);
-  console.log(checkWhack(clickedHole));
-  console.log('Score:', score)
+  socket.emit('check whack', { row, col })
 })
 
 // start.addEventListener('click', evt => {
@@ -40,17 +38,6 @@ board.addEventListener('click', evt => {
 // 	// startGame();
 // })
 
-
-
-
-const checkWhack = (clickedHole) => {
-	if (gameBoard[clickedHole.row][clickedHole.col]) {
-    score++
-		return 'whack!!!';
-	}
-  score--
-	return 'miss!'
-}
 
 socket.on('update board', gameBoard => drawBoard(gameBoard))
 

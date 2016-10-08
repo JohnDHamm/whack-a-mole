@@ -14,7 +14,7 @@ const io = socketio(server)
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URL = process.env.MONGODB_URL || 'mongodb://localhost:27017/whack-a-mole'
-
+let globalGameId
 
 app.set('view engine', 'pug');
 
@@ -31,7 +31,8 @@ app.get('/game/:id', (req, res) => {
 	//render game.pug
 	res.render('game');
 	//:id is the key for req.params
-	startGame(req.params.id)
+	globalGameId = req.params.id
+	startGame(globalGameId)
 })
 
 app.use(express.static('public'));
@@ -45,8 +46,7 @@ mongoose.connect(MONGODB_URL, () => {
 io.on('connect', socket => {
   console.log(`Socket connected: ${socket.id}`)
   socket.on('disconnect', () => console.log('Socket disconnected'))
-
-  socket.on('start game', () => startGame())
+  socket.on('check whack', (clickedHole) => checkWhack(clickedHole))
 })
 
 // set up game model for DB
@@ -139,9 +139,24 @@ const updateDbBoard = (boardObj, gameId) => {
 			console.log("get board back - gameObj: ", gameObj);
 			return gameObj;
 		})
+}
 
+const checkWhack = (clickedHole) => {
 
-
+	//get the game object from the db
+	Game.findById(globalGameId)
+		//returns game object
+		.then(gameObj => {
+			let gameBoard = gameObj.board
+			if (gameBoard[clickedHole.row][clickedHole.col]) {
+		    score++
+				console.log('whack!!!');
+				console.log(score)
+			}
+		  score--
+			console.log('miss!')
+			console.log(score)
+		})
 }
 
 // creates a new Game object in the mongo DB with the default value from the Game model
