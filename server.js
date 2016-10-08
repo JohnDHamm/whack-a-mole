@@ -150,12 +150,16 @@ const checkWhack = (clickedHole) => {
 			let gameBoard = gameObj.board
 			if (gameBoard[clickedHole.row][clickedHole.col]) {
 		    score++
+		    io.emit('update score', score)
 				console.log('whack!!!');
 				console.log(score)
+			}else{
+				score--
+			  io.emit('update score', score)
+				console.log('miss!')
+				console.log(score)
 			}
-		  score--
-			console.log('miss!')
-			console.log(score)
+		 
 		})
 }
 
