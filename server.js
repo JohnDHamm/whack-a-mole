@@ -25,12 +25,14 @@ app.get('/game/create', (req, res) => {
 		.then( game => res.redirect(`/game/${game._id}`));
 })
 
+//redirects to any /game/* route
 app.get('/game/:id', (req, res) => {
 	// console.log("req", req.params.id);
+	//render game.pug
 	res.render('game');
+	//:id is the key for req.params
 	startGame(req.params.id)
 })
-
 
 app.use(express.static('public'));
 
@@ -55,90 +57,91 @@ const Game = mongoose.model('game', {
       [String, String, String],
     ],
     default: [
-      ['x', 'x', 'x'],
+      ['X', '', ''],
       ['', '', ''],
     ]
   }
 })
 
 let score = 0,
-		turnCtr = 1,
-		timerInterval = 2000;
+		roundCtr = 1,
+		timerInterval = 2000,
+		maxRounds = 5;
 
-
-const makeMole = function() {
-	//assign a "mole" to the board
-	const rndRow = Math.floor(Math.random() * 2);
-	const rndCol = Math.floor(Math.random() * 3);
-
-	//update the db with new board
-
-	// gameBoard[rndRow][rndCol] = 'X';
-	// return gameBoard;
-	// timerInterval -= 250;
-}
 
 function startGame(gameId) {
 	console.log("starting new game", gameId);
-	//get game from db
+	//get game from db - mongoose method
 	Game.findById(gameId)
+		//returns game object from db
 		.then( game => {
 			// console.log("gameFound: ", game);
 			//update board
-			updateBoard(game.board);
-		  let id = setInterval(turn, timerInterval)
-		  function turn() {
-		    if(turnCtr > 10) {
-		      clearInterval(id)
+			emitBoard(game.board);
+		  const intervalId = setInterval(round, timerInterval)
+		  function round () {
+		    if(roundCtr > maxRounds) {
+		      clearInterval(intervalId)
 		      console.log('Game over, muthafucker!')
 		    } else {
-		      clearBoard(gameId);
-		      console.log("turn: ", turnCtr)
-		      const board = makeMole();
-		      // drawBoard(board);
-		      turnCtr++
+		    	Promise.resolve()
+						.then(() => clearBoard())
+						.then(emptyBoard => updateDbBoard(emptyBoard, gameId))
+						// .then(gameObj => emitBoard(gameObj))
+						.then(gameObj => makeMole(gameObj))
+						.then(gameObj => updateDbBoard(gameObj, gameId))
+						.then(gameObj => emitBoard(gameObj))
+						.then(gameObj => {
+			      	console.log("round: ", roundCtr);
+							roundCtr++
+						})
 		    }
 		  }
 		})
 
 }
 
-const clearBoard = (gameId) => {
+
+const makeMole = function(game) {
+	//assign a "mole" to the board
+	const rndRow = Math.floor(Math.random() * 2);
+	const rndCol = Math.floor(Math.random() * 3);
+	//add mole to board array
+	game.board[rndRow][rndCol] = '☃';
+	game.markModified('board') // trigger mongoose change detection
+	console.log("new mole game.board: ", game.board);
+	return game
+}
+
+const clearBoard = () => {
 	console.log("clearing board");
 	const emptyBoard = { board: [['','',''],['','','']] } ;
-	// update db with new board
-	updateDbBoard(emptyBoard, gameId)
+	return emptyBoard
 }
 
-const updateBoard = (board) => {
-	io.emit('update board', board)
+const emitBoard = (gameObj) => {
+	//sends to sockets on front end
+	io.emit('update board', gameObj.board)
+	return gameObj
 }
 
-const updateDbBoard = (game, gameId) => {
+const updateDbBoard = (boardObj, gameId) => {
+	// const newBoardObj = { boardArray }
+	console.log("sending board obj to db: ", boardObj);
 
-	console.log("updating db?", game, gameId);
 	//send new board to update the db
-	Game
-		.findOneAndUpdate({_id: gameId}, game, { upsert: true })
-		.then(data => {
-			console.log("data: ", data);
-			updateBoard(data.board)
-			// res.status(200).json(data)
+	return Game
+		// .findById(gameId)
+		// .then(g => g.save())
+		//finds game on db by id, updates the game object with object passed + returns entire game object
+		.findOneAndUpdate({_id: gameId}, boardObj, { upsert: true, new: true })
+		.then(gameObj => {
+			console.log("get board back - gameObj: ", gameObj);
+			return gameObj;
 		})
 
 
-	// Game
-	// 	.findById(gameId)
-	// 	// .then(game => console.log("game found ID:", game ))
-	// 	.then(game => {
-	// 		console.log("game found ID:", game )
-	// 		game.save(newBoard)
-	// 		.then ( game => {
-	// 			updateBoard(game.board)
-	// 			console.log("updated db board");
-	// 		})
 
-	// 	})
 }
 
 // creates a new Game object in the mongo DB with the default value from the Game model

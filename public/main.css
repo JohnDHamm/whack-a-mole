@@ -6,6 +6,7 @@ td {
   font-size: 120px;
   border-radius: 50%;
   background: radial-gradient(circle, black, #5E2F2F);
+  color: white;
 }
 
 .board {
