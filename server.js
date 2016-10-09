@@ -170,12 +170,17 @@ const checkWhack = (clickedHole) => {
 				// const scoreObj = { player1score: gameObj.player1score }
 				updateDbScore(gameObj)
 				console.log("testing promise order - after db score update?");
-			} else {
+			} 
+			else if (gameBoard[clickedHole.row][clickedHole.col] === `/img/snowden1_whacked.png`) {
+				console.log('Mole is already dead stop trying to kill him again')
+			} else if (gameBoard[clickedHole.row][clickedHole.col] === `/img/blank.png`){
 				gameObj.player1score --
 			  io.emit('update score', gameObj.player1score)
 				console.log('miss!')
 				console.log('player 1 score: ',gameObj.player1score)
 				updateDbScore(gameObj)
+			} else {
+				console.log('Moles are in holes, try clicking a hole')
 			}
 
 		})
