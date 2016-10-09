@@ -60,6 +60,10 @@ const Game = mongoose.model('game', {
       ['', '', ''],
       ['', '', ''],
     ]
+  },
+  player1score: {
+  	type: Number,
+  	default: 0
   }
 })
 
@@ -118,7 +122,7 @@ const makeMole = function(game) {
 	const rndCol = Math.floor(Math.random() * 3);
 	//add mole to board array
 	game.board[rndRow][rndCol] = `/img/snowden1.png`;
-	game.markModified('board') // trigger mongoose change detection
+	// game.markModified('board') // trigger mongoose change detection
 	// console.log("new mole game.board: ", game.board);
 	return game
 }
@@ -136,8 +140,7 @@ const emitBoard = (gameObj) => {
 }
 
 const updateDbBoard = (boardObj, gameId) => {
-	// const newBoardObj = { boardArray }
-	// console.log("sending board obj to db: ", boardObj);
+	// console.log("sending updated board obj to db: ", boardObj);
 
 	//send new board to update the db
 	return Game
@@ -149,31 +152,42 @@ const updateDbBoard = (boardObj, gameId) => {
 		})
 }
 
+
 const checkWhack = (clickedHole) => {
 
 	//get the game object from the db
 	Game.findById(globalGameId)
 		//returns game object
 		.then(gameObj => {
-			console.log("clickedHole: ", clickedHole);
+			// console.log("clickedHole: ", clickedHole);
 			let gameBoard = gameObj.board
-			console.log("gameBoard: ", gameBoard);
+			// console.log("gameBoard: ", gameBoard);
 			if (gameBoard[clickedHole.row][clickedHole.col] === `/img/snowden1.png`) {
-		    score++
-		    io.emit('update score', score)
+		    gameObj.player1score ++
+		    io.emit('update score', gameObj.player1score)
 				console.log('whack!!!');
-				console.log(score)
+				console.log('player 1 score: ', gameObj.player1score)
+				// const scoreObj = { player1score: gameObj.player1score }
+				updateDbScore(gameObj)
+				console.log("testing promise order - after db score update?");
 			} else {
-				score--
-			  io.emit('update score', score)
+				gameObj.player1score --
+			  io.emit('update score', gameObj.player1score)
 				console.log('miss!')
-				console.log(score)
+				console.log('player 1 score: ',gameObj.player1score)
+				updateDbScore(gameObj)
 			}
 
 		})
 }
 
-// creates a new Game object in the mongo DB with the default value from the Game model
-// the whole document that was just created is returned from the DB from the create function
-// and can be used after the then statement
-// Game.create({}).then(game => console.log("game", game));
+const updateDbScore = gameObj => {
+	console.log("score to update: ", gameObj.player1score);
+	Game
+		.findOneAndUpdate({_id: gameObj._id}, gameObj, { upsert: true, new: true })
+		.then(g => {
+			console.log("score updated - gameObj: ", g);
+			return g;
+		})
+}
+
