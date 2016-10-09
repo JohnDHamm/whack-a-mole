@@ -34,11 +34,12 @@ const writeScore = (score) => {
 }
 
 writeScore(0)
+
 board.addEventListener('click', evt => {
-  const col = evt.target.cellIndex
+  const col = evt.target.parentNode.cellIndex
   const row = evt.target.closest('tr').rowIndex
-  // console.log("clicked on row: ", row);
-  // console.log("clicked on col: ", col);
+  console.log("clicked on row: ", row);
+  console.log("clicked on col: ", col);
 
   let clickedHole = { row, col };
   // console.log("clickedHole", clickedHole);

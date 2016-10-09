@@ -90,16 +90,6 @@ function startGame(gameId) {
 						.then(emptyBoard => updateDbBoard(emptyBoard, gameId))
 						.then(gameObj => emitBoard(gameObj))
 						.then(pause)
-						// .then(g => {
-						// 	const startPauseTime = Date.now()
-						// 	var myVar = setInterval(myTimer, 1);
-						// 	function myTimer() {
-    		// 				var d = Date.now();
-    		// 				if (d > startPauseTime + 500) {
-    		// 					clearInterval(myVar)
-    		// 				}
-						// 	}
-						// })
 						.then(gameObj => makeMole(gameObj))
 						.then(gameObj => updateDbBoard(gameObj, gameId))
 						.then(gameObj => emitBoard(gameObj))
@@ -113,12 +103,13 @@ function startGame(gameId) {
 
 }
 
+
+//caution!!! - this blocks all processes for 500ms
 const pause = (gameObj) => {
 	console.log("pausing");
 	var currentTime = new Date().getTime();
 	while (currentTime + 500 >= new Date().getTime()) {};
 	return gameObj
-
 }
 
 const makeMole = function(game) {
@@ -130,7 +121,7 @@ const makeMole = function(game) {
 	game.board[rndRow][rndCol] = `/img/snowden1.png`;
 	// game.board[rndRow][rndCol] = `/img/giphy.gif`;
 	game.markModified('board') // trigger mongoose change detection
-	console.log("new mole game.board: ", game.board);
+	// console.log("new mole game.board: ", game.board);
 	return game
 }
 
@@ -148,16 +139,14 @@ const emitBoard = (gameObj) => {
 
 const updateDbBoard = (boardObj, gameId) => {
 	// const newBoardObj = { boardArray }
-	console.log("sending board obj to db: ", boardObj);
+	// console.log("sending board obj to db: ", boardObj);
 
 	//send new board to update the db
 	return Game
-		// .findById(gameId)
-		// .then(g => g.save())
 		//finds game on db by id, updates the game object with object passed + returns entire game object
 		.findOneAndUpdate({_id: gameId}, boardObj, { upsert: true, new: true })
 		.then(gameObj => {
-			console.log("get board back - gameObj: ", gameObj);
+			// console.log("get board back - gameObj: ", gameObj);
 			return gameObj;
 		})
 }
@@ -168,8 +157,10 @@ const checkWhack = (clickedHole) => {
 	Game.findById(globalGameId)
 		//returns game object
 		.then(gameObj => {
+			console.log("clickedHole: ", clickedHole);
 			let gameBoard = gameObj.board
-			if (gameBoard[clickedHole.row][clickedHole.col]) {
+			console.log("gameBoard: ", gameBoard);
+			if (gameBoard[clickedHole.row][clickedHole.col] === `/img/snowden1.png`) {
 		    score++
 		    io.emit('update score', score)
 				console.log('whack!!!');
