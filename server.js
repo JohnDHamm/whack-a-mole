@@ -117,9 +117,7 @@ const makeMole = function(game) {
 	const rndRow = Math.floor(Math.random() * 2);
 	const rndCol = Math.floor(Math.random() * 3);
 	//add mole to board array
-	// game.board[rndRow][rndCol] = '☃';
 	game.board[rndRow][rndCol] = `/img/snowden1.png`;
-	// game.board[rndRow][rndCol] = `/img/giphy.gif`;
 	game.markModified('board') // trigger mongoose change detection
 	// console.log("new mole game.board: ", game.board);
 	return game
@@ -127,7 +125,7 @@ const makeMole = function(game) {
 
 const clearBoard = () => {
 	console.log("clearing board");
-	const emptyBoard = { board: [['','',''],['','','']] } ;
+	const emptyBoard = { board: [['/img/blank.png','/img/blank.png','/img/blank.png'],['/img/blank.png','/img/blank.png','/img/blank.png']] } ;
 	return emptyBoard
 }
 
@@ -165,7 +163,7 @@ const checkWhack = (clickedHole) => {
 		    io.emit('update score', score)
 				console.log('whack!!!');
 				console.log(score)
-			}else{
+			} else {
 				score--
 			  io.emit('update score', score)
 				console.log('miss!')

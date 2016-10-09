@@ -25,7 +25,7 @@ const drawBoard = (b) => {
 }
 
 //hail mary
-const emptyBoard = [['','',''],['','','']]
+const emptyBoard = [['/img/blank.png','/img/blank.png','/img/blank.png'],['/img/blank.png','/img/blank.png','/img/blank.png']]
 
 drawBoard(emptyBoard)
 
@@ -41,7 +41,7 @@ board.addEventListener('click', evt => {
   console.log("clicked on row: ", row);
   console.log("clicked on col: ", col);
 
-  let clickedHole = { row, col };
+  // let clickedHole = { row, col };
   // console.log("clickedHole", clickedHole);
   socket.emit('check whack', { row, col })
 })
