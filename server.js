@@ -69,8 +69,8 @@ const Game = mongoose.model('game', {
 
 let score = 0,
 		roundCtr = 1,
-		timerInterval = 2000,
-		maxRounds = 5;
+		timerInterval = 1500,
+		maxRounds = 20;
 
 
 function startGame(gameId) {
