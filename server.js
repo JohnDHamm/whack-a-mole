@@ -163,10 +163,12 @@ const checkWhack = (clickedHole) => {
 			let gameBoard = gameObj.board
 			// console.log("gameBoard: ", gameBoard);
 			if (gameBoard[clickedHole.row][clickedHole.col] === `/img/snowden1.png`) {
-		    gameObj.player1score ++
+		    gameObj.player1score ++;
 		    io.emit('update score', gameObj.player1score)
-				console.log('whack!!!');
-				console.log('player 1 score: ', gameObj.player1score)
+		    gameBoard[clickedHole.row][clickedHole.col] = `/img/snowden1_whacked.png`
+		    io.emit('update board', gameBoard)
+				// console.log('whack!!!');
+				// console.log('player 1 score: ', gameObj.player1score)
 				// const scoreObj = { player1score: gameObj.player1score }
 				updateDbScore(gameObj)
 				console.log("testing promise order - after db score update?");
